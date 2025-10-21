@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Medical Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1><i class="fas fa-robot"></i> Medical Assistant</h1>
+                <span class="welcome-msg">Welcome, {{ username }}!</span>
+            </div>
+            <div class="header-right">
+                <a href="{{ url_for('set_language', lang='ar') }}" class="lang-btn">العربية</a>
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- AI Chat Assistant -->
+            <div class="dashboard-card main-card">
+                <h3><i class="fas fa-comments"></i> AI Medical Assistant</h3>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot-message">
+                            <div class="message-content">
+                                <strong>Hello! I'm your AI Medical Assistant</strong><br>
+                                Please describe your symptoms and I'll help analyze possible conditions.
+                                <br><br>
+                                <em>Examples: "I have headache and fever", "Feeling nauseous with dizziness"</em>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="input-group">
+                            <input type="text" id="userInput" placeholder="Describe your symptoms here..." autocomplete="off">
+                            <button id="sendButton">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="quick-symptoms">
+                            <span>Quick symptoms:</span>
+                            <button class="quick-btn" data-symptom="headache">Headache</button>
+                            <button class="quick-btn" data-symptom="fever">Fever</button>
+                            <button class="quick-btn" data-symptom="cough">Cough</button>
+                            <button class="quick-btn" data-symptom="nausea">Nausea</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments -->
+            <div class="dashboard-card">
+                <h3><i class="fas fa-calendar-check"></i> My Appointments</h3>
+                <form action="{{ url_for('book_appointment') }}" method="POST" class="appointment-form">
+                    <input type="text" name="doctor_name" placeholder="Doctor Name" required>
+                    <input type="datetime-local" name="appointment_date" required>
+                    <textarea name="reason" placeholder="Reason for visit" required></textarea>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-calendar-plus"></i> Book Appointment
+                    </button>
+                </form>
+                
+                <div class="appointments-list">
+                    {% for appointment in appointments %}
+                    <div class="appointment-item {% if appointment[6] == 'completed' %}completed{% endif %}">
+                        <div class="appointment-header">
+                            <strong>Dr. {{ appointment[2] }}</strong>
+                            <span class="appointment-status">{{ appointment[6] }}</span>
+                        </div>
+                        <div class="appointment-date">{{ appointment[3] }}</div>
+                        <div class="appointment-reason">{{ appointment[4] }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Chat History -->
+            <div class="dashboard-card">
+                <h3><i class="fas fa-history"></i> Chat History</h3>
+                <div class="history-list">
+                    {% for chat in chat_history %}
+                    <div class="history-item">
+                        <div class="history-question">{{ chat[2][:50] }}{% if chat[2]|length > 50 %}...{% endif %}</div>
+                        <div class="history-date">{{ chat[7] }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
